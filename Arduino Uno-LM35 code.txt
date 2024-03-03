@@ -1,0 +1,41 @@
+/*Interface of Arduino Uno with LM35 and turning on LEDs' based on exceeding respective threshold values!!!*/ 
+#include <TimerOne.h>
+
+const int lm35Pin = A0;    // LM35 temperature sensor connected to analog pin A0
+const int ledPin = 13;      // Arduino onboard LED connected to digital pin 13
+
+float temperature = 0;      // Variable to store temperature readings
+
+// Function prototypes
+void readTemperature();
+void blinkLED();
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Timer1.initialize(1000000);  // Initialize Timer1 with a period of 1 second (1000000 microseconds)
+  Timer1.attachInterrupt(blinkLED); // Attach the blinkLED function to Timer1 interrupt
+}
+
+void loop() {
+  readTemperature();  // Read temperature from LM35 sensor
+}
+
+// Function to read temperature from LM35 sensor
+void readTemperature() {
+  int sensorValue = analogRead(lm35Pin);
+  temperature = (sensorValue * 5.0 * 100.0) / 1024.0; // Convert the analog reading to temperature in Celsius
+  // Check temperature and control LED blinking accordingly
+  if (temperature < 30) {
+    Timer1.setPeriod(500000); // Set Timer1 period to 500 milliseconds (500000 microseconds)
+  } else {
+    Timer1.setPeriod(1000000); // Set Timer1 period to 1 second (1000000 microseconds)
+  }
+}
+
+// Function to blink LED
+void blinkLED() {
+  static bool ledState = LOW;
+  digitalWrite(ledPin, ledState);
+  ledState = !ledState;
+}
+//Module_info(Naradham_Dharanija-02/03/2024!!!
